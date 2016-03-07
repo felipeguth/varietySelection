@@ -524,3 +524,53 @@ clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData
 %end reading agronomical factors
 
 
+%%%%END READING
+hitMarket = 3;
+missMarket = -5;
+
+
+
+
+%market
+% 1
+% 2
+% 3
+% 4
+% 5
+market = 1;
+
+
+
+global votingTable;
+
+votingTable = zeros(5,41);
+
+%compute market voting
+marketVoting = zeros(1,41);
+
+for i=1:size(Varietiesmarkets,1)
+    if market == Varietiesmarkets{i,2}
+        marketVoting(1,i) = hitMarket;
+    else
+        marketVoting(1,i) = missMarket;
+    end    
+end
+
+
+%compute data sown
+seedDateVoting = zeros(1,41);
+%TEST THIS SHIT
+for i=2:size(SownPeriod,1)
+    
+    varietyName = SownPeriod{i,6};
+    varietyIndex = getVatietyIndex(varietyName);
+    
+    if market == Varietiesmarkets{i,2}
+        marketVoting(1,i) = hitMarket;
+    else
+        marketVoting(1,i) = missMarket;
+    end    
+end
+
+
+
