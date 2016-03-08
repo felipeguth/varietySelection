@@ -36,7 +36,7 @@ region = 'N';
 dataS = 2;
 
 
-
+global Varietiesmarkets
 
 
 
@@ -524,20 +524,21 @@ clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData
 %end reading agronomical factors
 %%%%END READING
 
-thresholdTrials = 10;
+
+hit = 3; %general hit
+miss =3; %general hit
 
 hitThresholdTrials = 2;
 hitTopYield = 3;
 hitToppcYield = 2;
 
-hitMarket = 10;
+hitMarket = 15;
 missMarket = -10;
 
 hitSeedPeriod = 3;
 missSeedPeriod = -3;
 
-numberTopYields = 5; %select top n yields to receive extra vote
-numberTopPctYields = 5;
+
 
 %market
 % 1
@@ -548,15 +549,11 @@ numberTopPctYields = 5;
 market = 1;
 
 
-global votingTable;
-
 votingTable = zeros(5,41);
 
-%compute votings
+%compute market votings
 marketVoting = zeros(1,41);
 seedingPeriodVoting = zeros(1,41);
-
-
 
 for i=1:size(Varietiesmarkets,1)
     if market == Varietiesmarkets{i,2}
@@ -567,66 +564,38 @@ for i=1:size(Varietiesmarkets,1)
 end
 
 
+%[ voteFactor ] = voting( matFactor, posValues, posVarName, hitFactor, missFactor, hitThresholdTrials, hitTopYield, hitToppcYield);
 
-yieldVect = zeros((size(SownPeriod,1)-1)/3,2);
-pctYieldVect = zeros((size(SownPeriod,1)-1)/3,2);
-yi = 1; %controls de number of line of the yield vector - used later to do the top 5 vote
-pyi = 1;% same as above to pct yield
+%seeding period
+[ seedingVotes ] = voting(SownPeriod, 8, 6, hitSeedPeriod, missSeedPeriod, hitThresholdTrials, hitTopYield, hitToppcYield);
 
+%soilType
+[ soilVotes ] = voting(SoilType, 8, 6, hit, miss, hitThresholdTrials, hitTopYield, hitToppcYield);
 
+%RotationalPosition
+[ rotationalPosVotes ] = voting(RotationalPosition, 9, 7, hit, miss, hitThresholdTrials, hitTopYield, hitToppcYield);
 
-%compute data sown
-seedDateVoting = zeros(1,41);
-for i=2:size(SownPeriod,1)
-    
-    measure = SownPeriod{i,1};
-       
-    varietyName = SownPeriod{i,6};
-    varietyIndex = GetVarietyIndex(Varietiesmarkets,varietyName);
-    
-    yield = strcmp(measure, 'Mean yield (t/ha)');   
-    trials = strcmp(measure, 'Number of trials');
-    pctYield = strcmp(measure, 'Yield (% control varieties)');
-    
-    if yield == 1 %assign vote for varieties within the seeding period especified        
-        seedingPeriodVoting(1,varietyIndex) =  seedingPeriodVoting(1,varietyIndex) + hitSeedPeriod;  
-        %store yield vector
-        yieldVect(yi,1) = varietyIndex;
-        yieldVect(yi,2) = SownPeriod{i,8};
-        yi = yi + 1;
-    elseif trials == 1  %assign vote for varieties with trials over threshold
-        if SownPeriod{i,8} > thresholdTrials;
-            seedingPeriodVoting(1,varietyIndex) = seedingPeriodVoting(1,varietyIndex) + hitThresholdTrials;
-        end
-    elseif pctYield == 1
-        %store %yield vector        
-        pctYieldVect(pyi,1) = varietyIndex;
-        pctYieldVect(pyi,2) = SownPeriod{i,8};
-        pyi = pyi + 1;
-    end
-    
-    
-%    hitTop5Yield = 3;
-% hitTop5pcYield = 2;
-%     
-%     seedingPeriodVoting(1,varietyIndex) =+ hitThresholdTrials;
+%Region
+[ regionVotes ] = voting(Region, 10, 8, hit, miss, hitThresholdTrials, hitTopYield, hitToppcYield);
 
 
-end    
-    
-%assign vote for top yields    
-[sortY,ixY] = sort(yieldVect(:,2),'descend'); %sort vector in descending order
-for i=1:numberTopYields
-    varietyIndex = yieldVect(ixY(i));
-    seedingPeriodVoting(1,varietyIndex) =  seedingPeriodVoting(1,varietyIndex) + hitTopYield; %vote for being in top yields
+%allocate votes on voting table
+votingTable(1,1:41) = marketVoting;
+votingTable(2,1:41) = seedingVotes;
+votingTable(3,1:41) = soilVotes;
+votingTable(4,1:41) = rotationalPosVotes;
+votingTable(5,1:41) = regionVotes;
+
+votesVar = sum(votingTable);
+
+nSelVar = 5; %compute Top N varieties selected for next phase
+selVarIndex = zeros(nSelVar,1);
+
+[sortVar,ixV] = sort(votesVar,'descend'); %sort vector in descending order
+for i=1:nSelVar
+    selVarIndex(i,1) = ixV(1,i);    
 end
 
 
-%assign vote for % top yields
-[sortY,ixY] = sort(pctYieldVect(:,2),'descend'); %sort vector in descending order
-for i=1:numberTopYields
-    varietyIndex = yieldVect(ixY(i));
-    seedingPeriodVoting(1,varietyIndex) =  seedingPeriodVoting(1,varietyIndex) + hitToppcYield; %vote for being in % top yields
-end
-    
+ %CLEAR VARIABLES 
 
