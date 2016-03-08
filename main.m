@@ -33,7 +33,7 @@ region = 'N';
 % 2 = mid - 15 sept - 6 october
 % 3 = late - after 15 november
 
-dataS = 1;
+dataS = 2;
 
 
 
@@ -522,14 +522,22 @@ agronomicalFactors = raw;
 %% Clear temporary variables
 clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData rawData row regexstr result numbers invalidThousandsSeparator thousandsRegExp me rawNumericColumns rawCellColumns R;
 %end reading agronomical factors
-
-
 %%%%END READING
-hitMarket = 3;
-missMarket = -5;
 
+thresholdTrials = 10;
 
+hitThresholdTrials = 2;
+hitTopYield = 3;
+hitToppcYield = 2;
 
+hitMarket = 10;
+missMarket = -10;
+
+hitSeedPeriod = 3;
+missSeedPeriod = -3;
+
+numberTopYields = 5; %select top n yields to receive extra vote
+numberTopPctYields = 5;
 
 %market
 % 1
@@ -540,37 +548,85 @@ missMarket = -5;
 market = 1;
 
 
-
 global votingTable;
 
 votingTable = zeros(5,41);
 
-%compute market voting
+%compute votings
 marketVoting = zeros(1,41);
+seedingPeriodVoting = zeros(1,41);
+
+
 
 for i=1:size(Varietiesmarkets,1)
     if market == Varietiesmarkets{i,2}
-        marketVoting(1,i) = hitMarket;
+        marketVoting(1,i) = marketVoting(1,i) + hitMarket;
     else
-        marketVoting(1,i) = missMarket;
+        marketVoting(1,i) = marketVoting(1,i) + missMarket;
     end    
 end
+
+
+
+yieldVect = zeros((size(SownPeriod,1)-1)/3,2);
+pctYieldVect = zeros((size(SownPeriod,1)-1)/3,2);
+yi = 1; %controls de number of line of the yield vector - used later to do the top 5 vote
+pyi = 1;% same as above to pct yield
+
 
 
 %compute data sown
 seedDateVoting = zeros(1,41);
-%TEST THIS SHIT
 for i=2:size(SownPeriod,1)
     
+    measure = SownPeriod{i,1};
+       
     varietyName = SownPeriod{i,6};
-    varietyIndex = getVatietyIndex(varietyName);
+    varietyIndex = GetVarietyIndex(Varietiesmarkets,varietyName);
     
-    if market == Varietiesmarkets{i,2}
-        marketVoting(1,i) = hitMarket;
-    else
-        marketVoting(1,i) = missMarket;
-    end    
+    yield = strcmp(measure, 'Mean yield (t/ha)');   
+    trials = strcmp(measure, 'Number of trials');
+    pctYield = strcmp(measure, 'Yield (% control varieties)');
+    
+    if yield == 1 %assign vote for varieties within the seeding period especified        
+        seedingPeriodVoting(1,varietyIndex) =  seedingPeriodVoting(1,varietyIndex) + hitSeedPeriod;  
+        %store yield vector
+        yieldVect(yi,1) = varietyIndex;
+        yieldVect(yi,2) = SownPeriod{i,8};
+        yi = yi + 1;
+    elseif trials == 1  %assign vote for varieties with trials over threshold
+        if SownPeriod{i,8} > thresholdTrials;
+            seedingPeriodVoting(1,varietyIndex) = seedingPeriodVoting(1,varietyIndex) + hitThresholdTrials;
+        end
+    elseif pctYield == 1
+        %store %yield vector        
+        pctYieldVect(pyi,1) = varietyIndex;
+        pctYieldVect(pyi,2) = SownPeriod{i,8};
+        pyi = pyi + 1;
+    end
+    
+    
+%    hitTop5Yield = 3;
+% hitTop5pcYield = 2;
+%     
+%     seedingPeriodVoting(1,varietyIndex) =+ hitThresholdTrials;
+
+
+end    
+    
+%assign vote for top yields    
+[sortY,ixY] = sort(yieldVect(:,2),'descend'); %sort vector in descending order
+for i=1:numberTopYields
+    varietyIndex = yieldVect(ixY(i));
+    seedingPeriodVoting(1,varietyIndex) =  seedingPeriodVoting(1,varietyIndex) + hitTopYield; %vote for being in top yields
 end
 
 
+%assign vote for % top yields
+[sortY,ixY] = sort(pctYieldVect(:,2),'descend'); %sort vector in descending order
+for i=1:numberTopYields
+    varietyIndex = yieldVect(ixY(i));
+    seedingPeriodVoting(1,varietyIndex) =  seedingPeriodVoting(1,varietyIndex) + hitToppcYield; %vote for being in % top yields
+end
+    
 
