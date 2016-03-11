@@ -1,3 +1,13 @@
+%parameters
+%market
+% 1
+% 2
+% 3
+% 4
+% 5
+market = 1;
+
+
 %soilType
 %1 - light
 %2 - Medium
@@ -9,15 +19,6 @@ optSoil = 1;
 %1 - first cereal
 %2 - second cereal
 rotaionalPosition = 1;
-
-
-if optSoil == 1
-    filename = 'RawData/treated/SoilType_Light.csv';
-elseif opt == 2
-    filename = 'RawData/treated/SoilType_Medium.csv';
-elseif opt ==3
-    filename = 'RawData/treated/SoilType_Heavy.csv';    
-end
 
 
 %region
@@ -32,8 +33,16 @@ region = 'N';
 % 1 = early - before september
 % 2 = mid - 15 sept - 6 october
 % 3 = late - after 15 november
-
 dataS = 2;
+
+
+%%%agronomic factors parameters
+
+%values parameters in factors %SUBSTITUTE THIS FOR DIAL UI
+low = 0.2;
+medium = 0.45;
+high = 0.9;
+
 
 
 global Varietiesmarkets
@@ -41,6 +50,14 @@ global Varietiesmarkets
 
 
 %%%Read Soils
+
+if optSoil == 1
+    filename = 'RawData/treated/SoilType_Light.csv';
+elseif opt == 2
+    filename = 'RawData/treated/SoilType_Medium.csv';
+elseif opt ==3
+    filename = 'RawData/treated/SoilType_Heavy.csv';    
+end
 
 %% Import data from text file.
 % Script for importing data from the following text file:
@@ -126,6 +143,47 @@ SoilType = raw;
 %% Clear temporary variables
 clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData rawData row regexstr result numbers invalidThousandsSeparator thousandsRegExp me rawNumericColumns rawCellColumns R;
 %%% end read soils
+
+
+
+
+%%%read agronomic factors
+%% Initialize variables.
+filename = '/home/phd/Documents/Matlab/varietySelection/RawData/treated/agronomicalFactorsList.csv';
+delimiter = ',';
+
+%% Format string for each line of text:
+%   column1: text (%s)
+%	column2: double (%f)
+%   column3: double (%f)
+% For more information, see the TEXTSCAN documentation.
+formatSpec = '%s%f%f%[^\n\r]';
+
+%% Open the text file.
+fileID = fopen(filename,'r');
+
+%% Read columns of data according to format string.
+% This call is based on the structure of the file used to generate this
+% code. If an error occurs for a different file, try regenerating the code
+% from the Import Tool.
+dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter,  'ReturnOnError', false);
+
+%% Close the text file.
+fclose(fileID);
+
+%% Post processing for unimportable data.
+% No unimportable data rules were applied during the import, so no post
+% processing code is included. To generate code which works for
+% unimportable data, select unimportable cells in a file and regenerate the
+% script.
+
+%% Create output variable
+dataArray([2, 3]) = cellfun(@(x) num2cell(x), dataArray([2, 3]), 'UniformOutput', false);
+agronomicalFactorsList = [dataArray{1:end-1}];
+%% Clear temporary variables
+clearvars filename delimiter formatSpec fileID dataArray ans;
+%%%end reading agronomic factors
+
 
 
 
@@ -539,16 +597,6 @@ hitSeedPeriod = 3;
 missSeedPeriod = -3;
 
 
-
-%market
-% 1
-% 2
-% 3
-% 4
-% 5
-market = 1;
-
-
 votingTable = zeros(5,41);
 
 %compute market votings
@@ -588,14 +636,109 @@ votingTable(5,1:41) = regionVotes;
 
 votesVar = sum(votingTable);
 
-nSelVar = 5; %compute Top N varieties selected for next phase
-selVarIndex = zeros(nSelVar,1);
+nSelVar = 6; %compute Top N varieties selected for next phase
+selVarIndex = zeros(nSelVar,2);
 
 [sortVar,ixV] = sort(votesVar,'descend'); %sort vector in descending order
 for i=1:nSelVar
-    selVarIndex(i,1) = ixV(1,i);    
+    selVarIndex(i,1) = ixV(1,i); %subset of selected varieties 
+    selVarIndex(i,2) = sortVar(1,i); 
 end
 
 
  %CLEAR VARIABLES 
+clear Region RotationalPosition SoilType SownPeriod 
 
+
+%voting agronomic factors
+lowAg = 0.2;
+medAg = 0.45;
+higAg = 0.9;
+
+
+nAgFac = size(agronomicalFactorsList,1); 
+nVar = size(selVarIndex,1);
+votingAgronomic = zeros(nVar, nAgFac);
+m = 0; %controls line number of ag voting
+
+for i=1:nVar
+    ltVarName = regexprep(Varietiesmarkets{selVarIndex(i,1),1},'[^\w'']',''); %name whithout spaces or special char
+    m = m+1;
+    for j=2:size(agronomicalFactors,1) %goes through ag factors data table        
+        tbVarName = regexprep(agronomicalFactors{j,4},'[^\w'']','');
+        
+        cmp = strcmp(tbVarName,ltVarName);  %compare variety of subset with the agronomic factor data in line
+        if cmp ==1
+            factorName = agronomicalFactors{j,1};
+            
+            for k=1:size(agronomicalFactorsList,1)             
+                cmp2 = strcmp(factorName,agronomicalFactorsList{k,1});
+                
+                if cmp2 == 1
+                    category = agronomicalFactorsList{k,3};
+                    if category == 1
+                        votingAgronomic(m,agronomicalFactorsList{k,2}) = agronomicalFactors{j,5} * higAg;                       
+                    elseif category == 2
+                        votingAgronomic(m,agronomicalFactorsList{k,2}) = 0.2;                        
+                    elseif category == 3
+                        votingAgronomic(m,agronomicalFactorsList{k,2}) = 0.2;                        
+                    end
+                end
+            end
+          
+        end 
+          
+    end
+end
+
+
+% 
+% 
+% 
+% 
+% 
+% 
+% for i=2:size(agronomicalFactors,1)
+%     tbVarName = regexprep(Varietiesmarkets{selVarIndex(j,1),1},'[^\w'']','');
+%     
+%     for j=1:nVar 
+%         
+%         
+%         cmp = strcmp(tbVarName,ltVarName);  %compare variety of subset with the agronomic factor data in line
+%         if cmp ==1
+%             %get factor 
+%             factor = agronomicalFactors{i,1};
+%             
+%             
+%             
+%             
+%             %STUDY how to make it dinamyc
+%             
+%             %ripening
+%             rip = strcmp(factor, 'Ripening (days +/- Solstice)');
+%             %resistance to lodging without PGR
+%             lodNoPgr = strcmp(factor, 'Resistance to lodging (without PGR) (1-9)');
+%             %resistence to lodging with PGR
+%             lodPgr = strcmp(factor, 'Resistance to lodging (with PGR) (1-9)');            
+%             %Height
+%             hgt = strcmp(factor, 'Height (cm) ');
+%             %yellow rust
+%             yelR = strcmp(factor, 'Yellow rust (1-9)');
+%             %septoria Tritici
+%             sepT = strcmp(factor, 'Septoria tritici (1-9)');
+%             %septoria Nodorum
+%             sepN = strcmp(factor, 'Septoria Nodorum (1-9)');
+%             %orange wheat blossom midge
+%             oraB = strcmp(factor, 'Orange wheat blossom midge');
+%             %mildew
+%             mild= strcmp(factor, 'Mildew (1-9)');            
+%             %fusarium ear blight
+%             fusa = strcmp(factor, 'Fusarium ear blight (1-9)');
+%             %Eyespot
+%             eye = strcmp(factor, 'Eyespot (1-9)');
+%             %brown rust
+%             broR = strcmp(factor, 'Brown rust (1-9)');
+%             
+%         end
+%     end
+% end
