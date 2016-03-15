@@ -691,6 +691,12 @@ for i=1:nVar
     end
 end
 
+%sum Votes
+selVarIndex(:,2) = selVarIndex(:,2) + sum(votingAgronomic,2);
+
+
+
+
 
 % 
 % 
