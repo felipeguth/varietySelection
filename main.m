@@ -1,4 +1,4 @@
-[handles, market, soil, sowing, rotPos, region, district ]= VarietySelection1();
+[handles, market, optSoil, dataS, rotaionalPosition, region, district, meanYieldW, yieldW, numberTrialsW ]= VarietySelection1();
 
 
 [handles2, resLodNoPgr, resLodYesPgr, yelRust, septTric, septNod, oraWBlMi, mildew, fusEaBli, eyespot, broRust, ripDays, height] = VarietySelection2();
@@ -11,27 +11,27 @@
 % 3
 % 4
 % 5
-market = 1;
+%market = 1;
 
 
 %soilType
 %1 - light
 %2 - Medium
 %3 - Heavy
-optSoil = 1;
+%optSoil = 1;
 
 
 %rotationalPosition
 %1 - first cereal
 %2 - second cereal
-rotaionalPosition = 1;
+%rotaionalPosition = 1;
 
 
 %region
 %N = North
 %W = West
 %E = East
-region = 'N';
+%region = 'N';
 
 
 % 
@@ -39,7 +39,7 @@ region = 'N';
 % 1 = early - before september
 % 2 = mid - 15 sept - 6 october
 % 3 = late - after 15 november
-dataS = 2;
+%dataS = 2;
 
 
 %%%agronomic factors parameters
@@ -59,9 +59,9 @@ global Varietiesmarkets
 
 if optSoil == 1
     filename = 'RawData/treated/SoilType_Light.csv';
-elseif opt == 2
+elseif optSoil == 2
     filename = 'RawData/treated/SoilType_Medium.csv';
-elseif opt ==3
+elseif optSoil ==3
     filename = 'RawData/treated/SoilType_Heavy.csv';    
 end
 
@@ -702,6 +702,12 @@ selVarIndex(:,2) = selVarIndex(:,2) + sum(votingAgronomic,2);
 
 
 
+
+
+%n = length(Y);
+h = bar(selVarIndex(:,2));
+colormap(summer(selVarIndex(:,1)));
+grid on
 
 
 % 
