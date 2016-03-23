@@ -172,7 +172,7 @@ varargout{7} = dist;
 varargout{1} = handles.output;
 uiresume(gcf);
 
-disp(handles);
+%disp(handles);
 
 delete(hObject)
 

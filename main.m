@@ -1,6 +1,9 @@
 [handles, market, soil, sowing, rotPos, region, district ]= VarietySelection1();
 
 
+[handles2, resLodNoPgr, resLodYesPgr, yelRust, septTric, septNod, oraWBlMi, mildew, fusEaBli, eyespot, broRust, ripDays, height] = VarietySelection2();
+
+
 %parameters
 %market
 % 1

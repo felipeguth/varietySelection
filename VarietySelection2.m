@@ -22,7 +22,7 @@ function varargout = VarietySelection2(varargin)
 
 % Edit the above text to modify the response to help VarietySelection2
 
-% Last Modified by GUIDE v2.5 22-Mar-2016 13:32:09
+% Last Modified by GUIDE v2.5 23-Mar-2016 14:20:14
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -59,7 +59,7 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 % UIWAIT makes VarietySelection2 wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+uiwait(gcf);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -71,6 +71,36 @@ function varargout = VarietySelection2_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+
+%disp(handles)
+
+varargout{2} = get(handles.popupmenu1, 'value');
+varargout{3} = get(handles.popupmenu2, 'value');
+
+%diseases
+varargout{4} = get(handles.popupmenu3, 'value');
+varargout{5} = get(handles.popupmenu4, 'value');
+varargout{6} = get(handles.popupmenu5, 'value');
+varargout{7} = get(handles.popupmenu6, 'value');
+varargout{8} = get(handles.popupmenu7, 'value');
+varargout{9} = get(handles.popupmenu8, 'value');
+varargout{10} = get(handles.popupmenu9, 'value');
+varargout{11} = get(handles.popupmenu10, 'value');
+
+%ripening days
+varargout{12} = get(handles.popupmenu11, 'value');
+%height
+varargout{13} = get(handles.popupmenu12, 'value');
+
+
+%disp(resLodPgr);
+
+
+uiresume(gcf);
+
+%disp(handles);
+delete(hObject)
+
 
 
 % --- Executes on slider movement.
@@ -404,3 +434,24 @@ function popupmenu12_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in pushbutton2.
+function pushbutton2_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+VarietySelection2_OutputFcn(hObject, eventdata, handles) 
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+VarietySelection2_OutputFcn(hObject, eventdata, handles) 
+
+%delete(hObject);
