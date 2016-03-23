@@ -59,7 +59,7 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 % UIWAIT makes VarietySelection1 wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+ uiwait(gcf);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -69,11 +69,114 @@ function varargout = VarietySelection1_OutputFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+
+
+%market
+group1 = get(handles.radiobutton1,'value'); 
+group2 = get(handles.radiobutton2,'value');
+group3 = get(handles.radiobutton3,'value');
+group4 = get(handles.radiobutton4,'value');
+group5 = get(handles.radiobutton5,'value'); 
+
+if group1 == 1
+    varargout{2} = 1;
+elseif group2 == 1
+    varargout{2} = 2;
+elseif group3 == 1
+    varargout{2} = 3;
+elseif group4 == 1
+    varargout{2} = 4;
+elseif group5 == 1
+    varargout{2} = 5;
+end
+
+
+%soil
+soilLight = get(handles.radiobutton6,'value'); 
+soilMid = get(handles.radiobutton7,'value');
+soilHeavy = get(handles.radiobutton8,'value');
+
+if soilLight == 1
+    varargout{3} = 1;
+elseif soilMid == 1
+    varargout{3} = 2;
+elseif soilHeavy == 1
+    varargout{3} = 3;
+end
+
+%sowing date
+sowingEarly = get(handles.radiobutton15,'value');
+sowingMid = get(handles.radiobutton16,'value');
+sowingLate = get(handles.radiobutton17,'value');
+
+if sowingEarly == 1
+     varargout{4} = 1;
+elseif sowingMid == 1
+     varargout{4} = 2;
+elseif sowingLate == 1
+    varargout{4} = 3;
+end
+
+
+%rotational position
+fstCereal = get(handles.radiobutton18,'value');
+scndCereal = get(handles.radiobutton19,'value');
+
+if fstCereal == 1
+    varargout{5} = 1;
+elseif scndCereal == 1
+    varargout{5} = 2;
+end
+
+%region
+westUk = get(handles.radiobutton23,'value');
+northUk = get(handles.radiobutton24,'value');
+eastUk = get(handles.radiobutton25,'value');
+
+if westUk == 1
+    varargout{6} = 'W';
+elseif northUk == 1
+    varargout{6} = 'N';
+elseif eastUk == 1
+    varargout{6} = 'E';
+end
+
+
+%District
+district = get(handles.popupmenu1,'value');
+
+if district == 1
+    dist = 'EE';%east england
+elseif district == 2
+    dist = 'ML';%midlands
+elseif district == 3
+    dist = 'NE'; %northeast england
+elseif district == 4
+    dist = 'NW';%Nortwest england
+elseif district == 5
+    dist = 'SE'; %South england
+elseif district == 6
+    dist = 'SW';%South west england
+elseif district == 7
+    dist = 'NI'; %northern ireland
+elseif district == 8
+    dist = 'ES'; %east scotland
+elseif district == 9
+    dist = 'WL'; %Wales
+end
+
+varargout{7} = dist;
+
+
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+uiresume(gcf);
 
+disp(handles);
 
-% --- Executes on selection change in popupmenu1.
+delete(hObject)
+
+% --- Executes ovarargout{1} = handles.output;n selection change in popupmenu1.
 function popupmenu1_Callback(hObject, eventdata, handles)
 % hObject    handle to popupmenu1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -96,19 +199,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --------------------------------------------------------------------
-function Untitled_1_Callback(hObject, eventdata, handles)
-% hObject    handle to Untitled_1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function Untitled_2_Callback(hObject, eventdata, handles)
-% hObject    handle to Untitled_2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 
 % --- Executes on button press in pushbutton1.
 function pushbutton1_Callback(hObject, eventdata, handles)
@@ -116,9 +206,8 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+%g1 = get(get(handles.uipanel1,'radiobutton1'), 'radiobutton1');
+VarietySelection1_OutputFcn(hObject, eventdata, handles) 
+%close(VarietySelection1);
 
-% --------------------------------------------------------------------
-function Untitled_3_Callback(hObject, eventdata, handles)
-% hObject    handle to Untitled_3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+
