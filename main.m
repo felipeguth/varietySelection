@@ -643,6 +643,8 @@ votingTable(5,1:41) = regionVotes;
 votesVar = sum(votingTable);
 
 nSelVar = 6; %compute Top N varieties selected for next phase
+
+global selVarIndex;
 selVarIndex = zeros(nSelVar,2);
 
 [sortVar,ixV] = sort(votesVar,'descend'); %sort vector in descending order
@@ -701,62 +703,25 @@ end
 selVarIndex(:,2) = selVarIndex(:,2) + sum(votingAgronomic,2);
 
 
+[sortVar,ixV] = sort(selVarIndex,'descend');
+
+%create cell array to display on gui3
+Nmax = 6;
+
+global resumeVotes;
+
+resumeVotes = cell(Nmax,3);
+
+ix = selVarIndex(ixV(:,2),1);
+votes = selVarIndex(ixV(:,2),2);
+
+for i=1:Nmax
+     resumeVotes{i,1} = ix(i);%index
+     resumeVotes{i,2} = char(Varietiesmarkets(ix(i),1));
+     resumeVotes{i,3} = votes(i);     
+end
 
 
-
-%n = length(Y);
-h = bar(selVarIndex(:,2));
-colormap(summer(selVarIndex(:,1)));
-grid on
-
-
-% 
-% 
-% 
-% 
-% 
-% 
-% for i=2:size(agronomicalFactors,1)
-%     tbVarName = regexprep(Varietiesmarkets{selVarIndex(j,1),1},'[^\w'']','');
-%     
-%     for j=1:nVar 
-%         
-%         
-%         cmp = strcmp(tbVarName,ltVarName);  %compare variety of subset with the agronomic factor data in line
-%         if cmp ==1
-%             %get factor 
-%             factor = agronomicalFactors{i,1};
-%             
-%             
-%             
-%             
-%             %STUDY how to make it dinamyc
-%             
-%             %ripening
-%             rip = strcmp(factor, 'Ripening (days +/- Solstice)');
-%             %resistance to lodging without PGR
-%             lodNoPgr = strcmp(factor, 'Resistance to lodging (without PGR) (1-9)');
-%             %resistence to lodging with PGR
-%             lodPgr = strcmp(factor, 'Resistance to lodging (with PGR) (1-9)');            
-%             %Height
-%             hgt = strcmp(factor, 'Height (cm) ');
-%             %yellow rust
-%             yelR = strcmp(factor, 'Yellow rust (1-9)');
-%             %septoria Tritici
-%             sepT = strcmp(factor, 'Septoria tritici (1-9)');
-%             %septoria Nodorum
-%             sepN = strcmp(factor, 'Septoria Nodorum (1-9)');
-%             %orange wheat blossom midge
-%             oraB = strcmp(factor, 'Orange wheat blossom midge');
-%             %mildew
-%             mild= strcmp(factor, 'Mildew (1-9)');            
-%             %fusarium ear blight
-%             fusa = strcmp(factor, 'Fusarium ear blight (1-9)');
-%             %Eyespot
-%             eye = strcmp(factor, 'Eyespot (1-9)');
-%             %brown rust
-%             broR = strcmp(factor, 'Brown rust (1-9)');
-%             
-%         end
-%     end
-% end
+ VarietySelection3();
+ 
+ 
