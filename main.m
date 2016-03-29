@@ -1,7 +1,62 @@
-[handles, market, optSoil, dataS, rotaionalPosition, region, district, meanYieldW, yieldW, numberTrialsW ]= VarietySelection1();
+%%%read agronomic factors
+%% Initialize variables.
+filename = '/home/phd/Documents/Matlab/varietySelection/RawData/treated/agronomicalFactorsList.csv';
+delimiter = ',';
+
+%% Format string for each line of text:
+%   column1: text (%s)
+%	column2: double (%f)
+%   column3: double (%f)
+% For more information, see the TEXTSCAN documentation.
+formatSpec = '%s%f%f%[^\n\r]';
+
+%% Open the text file.
+fileID = fopen(filename,'r');
+
+%% Read columns of data according to format string.
+% This call is based on the structure of the file used to generate this
+% code. If an error occurs for a different file, try regenerating the code
+% from the Import Tool.
+dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter,  'ReturnOnError', false);
+
+%% Close the text file.
+fclose(fileID);
+
+%% Post processing for unimportable data.
+% No unimportable data rules were applied during the import, so no post
+% processing code is included. To generate code which works for
+% unimportable data, select unimportable cells in a file and regenerate the
+% script.
+
+%% Create output variable
+dataArray([2, 3]) = cellfun(@(x) num2cell(x), dataArray([2, 3]), 'UniformOutput', false);
+agronomicalFactorsList = [dataArray{1:end-1}];
+%% Clear temporary variables
+clearvars filename delimiter formatSpec fileID dataArray ans;
+%%%end reading agronomic factors - read this one first to include weights
+%%%of user selection in the following second gui
+
+
+
+[handles, market, optSoil, dataS, rotaionalPosition, region, district]= VarietySelection1();
 
 
 [handles2, resLodNoPgr, resLodYesPgr, yelRust, septTric, septNod, oraWBlMi, mildew, fusEaBli, eyespot, broRust, ripDays, height] = VarietySelection2();
+
+%this code is not dynamic
+agronomicalFactorsList{1,4} = ripDays;
+agronomicalFactorsList{2,4} = resLodNoPgr;
+agronomicalFactorsList{3,4} = resLodYesPgr;
+agronomicalFactorsList{4,4} = height;
+agronomicalFactorsList{5,4} = yelRust;
+agronomicalFactorsList{6,4} = septTric;
+agronomicalFactorsList{7,4} = septNod;
+agronomicalFactorsList{8,4} = oraWBlMi;
+agronomicalFactorsList{9,4} = mildew;
+agronomicalFactorsList{10,4} = fusEaBli;
+agronomicalFactorsList{11,4} = eyespot;
+agronomicalFactorsList{12,4} = broRust;
+
 
 
 %parameters
@@ -153,42 +208,6 @@ clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData
 
 
 
-%%%read agronomic factors
-%% Initialize variables.
-filename = '/home/phd/Documents/Matlab/varietySelection/RawData/treated/agronomicalFactorsList.csv';
-delimiter = ',';
-
-%% Format string for each line of text:
-%   column1: text (%s)
-%	column2: double (%f)
-%   column3: double (%f)
-% For more information, see the TEXTSCAN documentation.
-formatSpec = '%s%f%f%[^\n\r]';
-
-%% Open the text file.
-fileID = fopen(filename,'r');
-
-%% Read columns of data according to format string.
-% This call is based on the structure of the file used to generate this
-% code. If an error occurs for a different file, try regenerating the code
-% from the Import Tool.
-dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter,  'ReturnOnError', false);
-
-%% Close the text file.
-fclose(fileID);
-
-%% Post processing for unimportable data.
-% No unimportable data rules were applied during the import, so no post
-% processing code is included. To generate code which works for
-% unimportable data, select unimportable cells in a file and regenerate the
-% script.
-
-%% Create output variable
-dataArray([2, 3]) = cellfun(@(x) num2cell(x), dataArray([2, 3]), 'UniformOutput', false);
-agronomicalFactorsList = [dataArray{1:end-1}];
-%% Clear temporary variables
-clearvars filename delimiter formatSpec fileID dataArray ans;
-%%%end reading agronomic factors
 
 
 
@@ -642,7 +661,7 @@ votingTable(5,1:41) = regionVotes;
 
 votesVar = sum(votingTable);
 
-nSelVar = 6; %compute Top N varieties selected for next phase
+nSelVar = 10; %compute Top N varieties selected for next phase %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THINK ON THIS
 
 global selVarIndex;
 selVarIndex = zeros(nSelVar,2);
@@ -669,6 +688,38 @@ nVar = size(selVarIndex,1);
 votingAgronomic = zeros(nVar, nAgFac);
 m = 0; %controls line number of ag voting
 
+% for i=1:nVar
+%     ltVarName = regexprep(Varietiesmarkets{selVarIndex(i,1),1},'[^\w'']',''); %name whithout spaces or special char
+%     m = m+1;
+%     for j=2:size(agronomicalFactors,1) %goes through ag factors data table        
+%         tbVarName = regexprep(agronomicalFactors{j,4},'[^\w'']','');
+%         
+%         cmp = strcmp(tbVarName,ltVarName);  %compare variety of subset with the agronomic factor data in line
+%         if cmp ==1
+%             factorName = agronomicalFactors{j,1};
+%             
+%             for k=1:size(agronomicalFactorsList,1)             
+%                 cmp2 = strcmp(factorName,agronomicalFactorsList{k,1});
+%                 
+%                 if cmp2 == 1
+%                     category = agronomicalFactorsList{k,3};
+%                     if category == 1
+%                         votingAgronomic(m,agronomicalFactorsList{k,2}) = agronomicalFactors{j,5} * higAg; %multiply for measured factor                      
+%                     elseif category == 2
+%                         votingAgronomic(m,agronomicalFactorsList{k,2}) = 0.2;                        
+%                     elseif category == 3
+%                         votingAgronomic(m,agronomicalFactorsList{k,2}) = 0.2;                        
+%                     end
+%                 end
+%             end
+%           
+%         end 
+%           
+%     end
+% end
+
+
+
 for i=1:nVar
     ltVarName = regexprep(Varietiesmarkets{selVarIndex(i,1),1},'[^\w'']',''); %name whithout spaces or special char
     m = m+1;
@@ -680,24 +731,132 @@ for i=1:nVar
             factorName = agronomicalFactors{j,1};
             
             for k=1:size(agronomicalFactorsList,1)             
-                cmp2 = strcmp(factorName,agronomicalFactorsList{k,1});
+                cmp2 = strcmp(factorName,agronomicalFactorsList{k,1}); %compare actual factor with the trials data
                 
                 if cmp2 == 1
                     category = agronomicalFactorsList{k,3};
-                    if category == 1
-                        votingAgronomic(m,agronomicalFactorsList{k,2}) = agronomicalFactors{j,5} * higAg;                       
-                    elseif category == 2
-                        votingAgronomic(m,agronomicalFactorsList{k,2}) = 0.2;                        
-                    elseif category == 3
-                        votingAgronomic(m,agronomicalFactorsList{k,2}) = 0.2;                        
+                    
+                    if category == 1 %(1-9)  
+                        votingAgronomic(m,agronomicalFactorsList{k,2}) = agronomicalFactors{j,5} * (agronomicalFactorsList{k,4}/5); %multiply for measured factor                      
+                    
+                    elseif category == 2 %1 or 0 
+                        votingAgronomic(m,agronomicalFactorsList{k,2}) = ( ((agronomicalFactors{j,5} + 8) * agronomicalFactors{j,5})  * agronomicalFactorsList{k,4}/5); %maximum or minimum                        
+                    
+                    elseif category == 3 %ripening days                        
+                        if agronomicalFactorsList{k,4} == 1
+                            
+                        elseif agronomicalFactorsList{k,4} == 2 %(-1-0)
+                            if agronomicalFactors{j,5} == -1 || agronomicalFactors{j,5} == 0
+                                votingAgronomic(m,agronomicalFactorsList{k,2}) = 9/2 * 5/5; %half of maximum hit
+                            end
+                        elseif agronomicalFactorsList{k,4} == 3 %(1-2)
+                            if agronomicalFactors{j,5} == 1 || agronomicalFactors{j,5} == 2
+                                votingAgronomic(m,agronomicalFactorsList{k,2}) = 9/2 * 5/5; %half of maximum hit
+                            end
+                        elseif agronomicalFactorsList{k,4} == 4 %(2-3)
+                            if agronomicalFactors{j,5} == 2 || agronomicalFactors{j,5} == 3
+                                votingAgronomic(m,agronomicalFactorsList{k,2}) = 9/2 * 5/5; %half of maximum hit
+                            end
+                        elseif agronomicalFactorsList{k,4} == 5 %(3-5)
+                            if agronomicalFactors{j,5} > 3
+                                votingAgronomic(m,agronomicalFactorsList{k,2}) = 9/2 * 5/5; %half of maximum hit
+                            end
+                        end                       
+                        
+                    elseif category == 4 %height
+                        if agronomicalFactorsList{k,4} == 1
+                        
+                        elseif agronomicalFactorsList{k,4} == 2 %(72-77)
+                            if agronomicalFactors{j,5} < 78
+                                votingAgronomic(m,agronomicalFactorsList{k,2}) = 9/2 * 5/5; %half of maximum hit                                
+                            end                            
+                        elseif agronomicalFactorsList{k,4} == 3 %(78-82)
+                            if agronomicalFactors{j,5} > 77 && agronomicalFactors{j,5} < 83
+                                votingAgronomic(m,agronomicalFactorsList{k,2}) = 9/2 * 5/5; %half of maximum hit                                
+                            end
+                        elseif agronomicalFactorsList{k,4} == 4 %(82-86)
+                            if agronomicalFactors{j,5} > 82 && agronomicalFactors{j,5} < 87
+                                votingAgronomic(m,agronomicalFactorsList{k,2}) = 9/2 * 5/5; %half of maximum hit                                
+                            end 
+                        elseif agronomicalFactorsList{k,4} == 5 %(87-91+)
+                            if agronomicalFactors{j,5} > 86 
+                                votingAgronomic(m,agronomicalFactorsList{k,2}) = 9/2 * 5/5; %half of maximum hit                                
+                            end 
+                        end                    
                     end
                 end
             end
-          
-        end 
-          
+        end
     end
 end
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% for i=2:size(agronomicalFactors,1)
+%     tbVarName = regexprep(Varietiesmarkets{selVarIndex(j,1),1},'[^\w'']','');
+%     
+%     for j=1:nVar 
+%         
+%         
+%         cmp = strcmp(tbVarName,ltVarName);  %compare variety of subset with the agronomic factor data in line
+%         if cmp ==1
+%             %get factor 
+%             factor = agronomicalFactors{i,1};
+%             
+%             
+%             
+%             
+%             %STUDY how to make it dinamyc
+%             
+%             %ripening
+%             rip = strcmp(factor, 'Ripening (days +/- Solstice)');
+%             %resistance to lodging without PGR
+%             lodNoPgr = strcmp(factor, 'Resistance to lodging (without PGR) (1-9)');
+%             %resistence to lodging with PGR
+%             lodPgr = strcmp(factor, 'Resistance to lodging (with PGR) (1-9)');            
+%             %Height
+%             hgt = strcmp(factor, 'Height (cm) ');
+%             %yellow rust
+%             yelR = strcmp(factor, 'Yellow rust (1-9)');
+%             %septoria Tritici
+%             sepT = strcmp(factor, 'Septoria tritici (1-9)');
+%             %septoria Nodorum
+%             sepN = strcmp(factor, 'Septoria Nodorum (1-9)');
+%             %orange wheat blossom midge
+%             oraB = strcmp(factor, 'Orange wheat blossom midge');
+%             %mildew
+%             mild= strcmp(factor, 'Mildew (1-9)');            
+%             %fusarium ear blight
+%             fusa = strcmp(factor, 'Fusarium ear blight (1-9)');
+%             %Eyespot
+%             eye = strcmp(factor, 'Eyespot (1-9)');
+%             %brown rust
+%             broR = strcmp(factor, 'Brown rust (1-9)');
+%             
+%         end
+%     end
+% end
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %sum Votes
 selVarIndex(:,2) = selVarIndex(:,2) + sum(votingAgronomic,2);
@@ -706,7 +865,7 @@ selVarIndex(:,2) = selVarIndex(:,2) + sum(votingAgronomic,2);
 [sortVar,ixV] = sort(selVarIndex,'descend');
 
 %create cell array to display on gui3
-Nmax = 6;
+Nmax = nSelVar;
 
 global resumeVotes;
 
@@ -723,5 +882,7 @@ end
 
 
  VarietySelection3();
+ 
+ 
  
  

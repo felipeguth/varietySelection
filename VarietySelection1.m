@@ -168,9 +168,9 @@ end
 varargout{7} = dist;
 
 %get importance factor of measurements
-varargout{8} = get(handles.popupmenu2, 'value'); %meanYield
-varargout{9} = get(handles.popupmenu3, 'value');%Yield
-varargout{10} = get(handles.popupmenu4, 'value');%number of trials
+% varargout{8} = get(handles.popupmenu2, 'value'); %meanYield
+% varargout{9} = get(handles.popupmenu3, 'value');%Yield
+% varargout{10} = get(handles.popupmenu4, 'value');%number of trials
 
 
 
