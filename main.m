@@ -688,38 +688,6 @@ nVar = size(selVarIndex,1);
 votingAgronomic = zeros(nVar, nAgFac);
 m = 0; %controls line number of ag voting
 
-% for i=1:nVar
-%     ltVarName = regexprep(Varietiesmarkets{selVarIndex(i,1),1},'[^\w'']',''); %name whithout spaces or special char
-%     m = m+1;
-%     for j=2:size(agronomicalFactors,1) %goes through ag factors data table        
-%         tbVarName = regexprep(agronomicalFactors{j,4},'[^\w'']','');
-%         
-%         cmp = strcmp(tbVarName,ltVarName);  %compare variety of subset with the agronomic factor data in line
-%         if cmp ==1
-%             factorName = agronomicalFactors{j,1};
-%             
-%             for k=1:size(agronomicalFactorsList,1)             
-%                 cmp2 = strcmp(factorName,agronomicalFactorsList{k,1});
-%                 
-%                 if cmp2 == 1
-%                     category = agronomicalFactorsList{k,3};
-%                     if category == 1
-%                         votingAgronomic(m,agronomicalFactorsList{k,2}) = agronomicalFactors{j,5} * higAg; %multiply for measured factor                      
-%                     elseif category == 2
-%                         votingAgronomic(m,agronomicalFactorsList{k,2}) = 0.2;                        
-%                     elseif category == 3
-%                         votingAgronomic(m,agronomicalFactorsList{k,2}) = 0.2;                        
-%                     end
-%                 end
-%             end
-%           
-%         end 
-%           
-%     end
-% end
-
-
-
 for i=1:nVar
     ltVarName = regexprep(Varietiesmarkets{selVarIndex(i,1),1},'[^\w'']',''); %name whithout spaces or special char
     m = m+1;
@@ -792,75 +760,13 @@ end
 
 
 
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% for i=2:size(agronomicalFactors,1)
-%     tbVarName = regexprep(Varietiesmarkets{selVarIndex(j,1),1},'[^\w'']','');
-%     
-%     for j=1:nVar 
-%         
-%         
-%         cmp = strcmp(tbVarName,ltVarName);  %compare variety of subset with the agronomic factor data in line
-%         if cmp ==1
-%             %get factor 
-%             factor = agronomicalFactors{i,1};
-%             
-%             
-%             
-%             
-%             %STUDY how to make it dinamyc
-%             
-%             %ripening
-%             rip = strcmp(factor, 'Ripening (days +/- Solstice)');
-%             %resistance to lodging without PGR
-%             lodNoPgr = strcmp(factor, 'Resistance to lodging (without PGR) (1-9)');
-%             %resistence to lodging with PGR
-%             lodPgr = strcmp(factor, 'Resistance to lodging (with PGR) (1-9)');            
-%             %Height
-%             hgt = strcmp(factor, 'Height (cm) ');
-%             %yellow rust
-%             yelR = strcmp(factor, 'Yellow rust (1-9)');
-%             %septoria Tritici
-%             sepT = strcmp(factor, 'Septoria tritici (1-9)');
-%             %septoria Nodorum
-%             sepN = strcmp(factor, 'Septoria Nodorum (1-9)');
-%             %orange wheat blossom midge
-%             oraB = strcmp(factor, 'Orange wheat blossom midge');
-%             %mildew
-%             mild= strcmp(factor, 'Mildew (1-9)');            
-%             %fusarium ear blight
-%             fusa = strcmp(factor, 'Fusarium ear blight (1-9)');
-%             %Eyespot
-%             eye = strcmp(factor, 'Eyespot (1-9)');
-%             %brown rust
-%             broR = strcmp(factor, 'Brown rust (1-9)');
-%             
-%         end
-%     end
-% end
-
-
-
-
-
-
-
-
-
-
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%sum Votes
-selVarIndex(:,2) = selVarIndex(:,2) + sum(votingAgronomic,2);
+%normalize and sum Votes - 50% each gui
+selVarIndex(:,2) = normc(selVarIndex(:,2));
+a = sum(votingAgronomic,2);
 
+selVarIndex(:,2) = ((selVarIndex(:,2) + normc(a))/2)*100;
 
 [sortVar,ixV] = sort(selVarIndex,'descend');
 
@@ -869,7 +775,7 @@ Nmax = nSelVar;
 
 global resumeVotes;
 
-resumeVotes = cell(Nmax,3);
+resumeVotes = cell(Nmax,4);
 
 ix = selVarIndex(ixV(:,2),1);
 votes = selVarIndex(ixV(:,2),2);
@@ -878,6 +784,7 @@ for i=1:Nmax
      resumeVotes{i,1} = ix(i);%index
      resumeVotes{i,2} = char(Varietiesmarkets(ix(i),1));
      resumeVotes{i,3} = votes(i);     
+     resumeVotes{i,4} = Varietiesmarkets{ix(i),2};
 end
 
 

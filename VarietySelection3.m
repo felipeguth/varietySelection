@@ -71,7 +71,7 @@ end
 global resumeVotes
 
 dataCell= resumeVotes;%{'John',26;'Henri',18};%# store data as a cell
-colNames={'Num','Name', 'Points'};%# names for each column of data
+colNames={'Num','Name', 'Points', 'Market'};%# names for each column of data
 
 uitable('Data',dataCell,'ColumnName',colNames, 'Position',[150 380 300 175]);
 
