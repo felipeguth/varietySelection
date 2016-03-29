@@ -208,12 +208,6 @@ clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData
 
 
 
-
-
-
-
-
-
 %%%read varieties and markets
 %% Initialize variables.
 filename = '/home/phd/Documents/Matlab/varietySelection/RawData/treated/Varieties_markets.csv';
@@ -527,6 +521,89 @@ clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData
 %%%end seed period reading
 
 
+district;
+
+
+%%% reads districts
+
+%% Initialize variables.
+a = '/home/phd/Documents/Matlab/varietySelection/RawData/treated/District_';
+b = strcat(district, '.csv');
+
+filename =  strcat(a,b);
+delimiter = ',';
+
+%% Read columns of data as strings:
+% For more information, see the TEXTSCAN documentation.
+formatSpec = '%*s%*s%*s%s%*s%*s%*s%s%s%s%*s%s%s%s%s%[^\n\r]';
+
+%% Open the text file.
+fileID = fopen(filename,'r');
+
+%% Read columns of data according to format string.
+% This call is based on the structure of the file used to generate this
+% code. If an error occurs for a different file, try regenerating the code
+% from the Import Tool.
+dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter,  'ReturnOnError', false);
+
+%% Close the text file.
+fclose(fileID);
+
+%% Convert the contents of columns containing numeric strings to numbers.
+% Replace non-numeric strings with NaN.
+raw = repmat({''},length(dataArray{1}),length(dataArray)-1);
+for col=1:length(dataArray)-1
+    raw(1:length(dataArray{col}),col) = dataArray{col};
+end
+numericData = NaN(size(dataArray{1},1),size(dataArray,2));
+
+for col=[5,7,8]
+    % Converts strings in the input cell array to numbers. Replaced non-numeric
+    % strings with NaN.
+    rawData = dataArray{col};
+    for row=1:size(rawData, 1);
+        % Create a regular expression to detect and remove non-numeric prefixes and
+        % suffixes.
+        regexstr = '(?<prefix>.*?)(?<numbers>([-]*(\d+[\,]*)+[\.]{0,1}\d*[eEdD]{0,1}[-+]*\d*[i]{0,1})|([-]*(\d+[\,]*)*[\.]{1,1}\d+[eEdD]{0,1}[-+]*\d*[i]{0,1}))(?<suffix>.*)';
+        try
+            result = regexp(rawData{row}, regexstr, 'names');
+            numbers = result.numbers;
+            
+            % Detected commas in non-thousand locations.
+            invalidThousandsSeparator = false;
+            if any(numbers==',');
+                thousandsRegExp = '^\d+?(\,\d{3})*\.{0,1}\d*$';
+                if isempty(regexp(thousandsRegExp, ',', 'once'));
+                    numbers = NaN;
+                    invalidThousandsSeparator = true;
+                end
+            end
+            % Convert numeric strings to numbers.
+            if ~invalidThousandsSeparator;
+                numbers = textscan(strrep(numbers, ',', ''), '%f');
+                numericData(row, col) = numbers{1};
+                raw{row, col} = numbers{1};
+            end
+        catch me
+        end
+    end
+end
+
+%% Split data into numeric and cell columns.
+rawNumericColumns = raw(:, [5,7,8]);
+rawCellColumns = raw(:, [1,2,3,4,6]);
+
+
+%% Replace non-numeric cells with NaN
+R = cellfun(@(x) ~isnumeric(x) && ~islogical(x),rawNumericColumns); % Find non-numeric cells
+rawNumericColumns(R) = {NaN}; % Replace non-numeric cells
+
+%% Create output variable
+District = raw;
+%% Clear temporary variables
+clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData rawData row regexstr result numbers invalidThousandsSeparator thousandsRegExp me rawNumericColumns rawCellColumns R;
+%%end districts reading
+
 
 
 
@@ -608,6 +685,7 @@ clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData
 %%%%END READING
 
 
+
 hit = 3; %general hit
 miss =3; %general hit
 
@@ -622,7 +700,7 @@ hitSeedPeriod = 3;
 missSeedPeriod = -3;
 
 
-votingTable = zeros(5,41);
+votingTable = zeros(6,41);
 
 %compute market votings
 marketVoting = zeros(1,41);
@@ -649,7 +727,10 @@ end
 [ rotationalPosVotes ] = voting(RotationalPosition, 9, 7, hit, miss, hitThresholdTrials, hitTopYield, hitToppcYield);
 
 %Region
-[ regionVotes ] = voting(Region, 10, 8, hit, miss, hitThresholdTrials, hitTopYield, hitToppcYield);
+[ regionVotes ] = voting(Region, 10, 8, 2, -5, hitThresholdTrials, hitTopYield, hitToppcYield);
+
+%district
+[ districtVotes ] = voting(District, 8, 6, 3, -5, hitThresholdTrials, hitTopYield, hitToppcYield);
 
 
 %allocate votes on voting table
@@ -658,6 +739,7 @@ votingTable(2,1:41) = seedingVotes;
 votingTable(3,1:41) = soilVotes;
 votingTable(4,1:41) = rotationalPosVotes;
 votingTable(5,1:41) = regionVotes;
+votingTable(6,1:41) = districtVotes;
 
 votesVar = sum(votingTable);
 
@@ -786,7 +868,6 @@ for i=1:Nmax
      resumeVotes{i,3} = votes(i);     
      resumeVotes{i,4} = Varietiesmarkets{ix(i),2};
 end
-
 
  VarietySelection3();
  

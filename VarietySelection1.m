@@ -146,23 +146,23 @@ end
 district = get(handles.popupmenu1,'value');
 
 if district == 1
-    dist = 'EE';%east england
+    dist = 'EastEngland';%east england
 elseif district == 2
-    dist = 'ML';%midlands
+    dist = 'Midlands';%midlands
 elseif district == 3
-    dist = 'NE'; %northeast england
+    dist = 'NorthEastEngland'; %northeast england
 elseif district == 4
-    dist = 'NW';%Nortwest england
+    dist = 'NorthWestEngland';%Nortwest england
 elseif district == 5
-    dist = 'SE'; %South england
+    dist = 'SouthEngland'; %South england
 elseif district == 6
-    dist = 'SW';%South west england
+    dist = 'SouthWestEngland';%South west england
 elseif district == 7
-    dist = 'NI'; %northern ireland
+    dist = 'NorthernIreland'; %northern ireland
 elseif district == 8
-    dist = 'ES'; %east scotland
+    dist = 'EastScotland'; %east scotland
 elseif district == 9
-    dist = 'WL'; %Wales
+    dist = 'Wales'; %Wales
 end
 
 varargout{7} = dist;
