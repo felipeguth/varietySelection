@@ -51,7 +51,7 @@ agronomicalFactorsList{4,4} = height;
 agronomicalFactorsList{5,4} = yelRust;
 agronomicalFactorsList{6,4} = septTric;
 agronomicalFactorsList{7,4} = septNod;
-agronomicalFactorsList{8,4} = oraWBlMi-1;
+agronomicalFactorsList{8,4} = oraWBlMi;
 agronomicalFactorsList{9,4} = mildew;
 agronomicalFactorsList{10,4} = fusEaBli;
 agronomicalFactorsList{11,4} = eyespot;
@@ -787,11 +787,14 @@ for i=1:nVar
                     category = agronomicalFactorsList{k,3};
                     
                     if category == 1 %(1-9)  
-                        votingAgronomic(m,agronomicalFactorsList{k,2}) = agronomicalFactors{j,5} * (agronomicalFactorsList{k,4}/5); %multiply for measured factor                      
+                        votingAgronomic(m,agronomicalFactorsList{k,2}) = agronomicalFactors{j,5} * (agronomicalFactorsList{k,4}/5); %multiply for measured factor                          
                     
                     elseif category == 2 %1 or 0 
-                        votingAgronomic(m,agronomicalFactorsList{k,2}) = ( ((agronomicalFactors{j,5} + 8) * agronomicalFactors{j,5})  * agronomicalFactorsList{k,4}/5); %maximum or minimum                        
-                    
+                        votingAgronomic(m,agronomicalFactorsList{k,2}) = ( ((agronomicalFactors{j,5} + 8) * agronomicalFactors{j,5})  * agronomicalFactorsList{k,4}/5); % 0+8*0*importance=0 or 1+8*1*importance = >0; takes maaximum or minimum importance                         
+%                         a1 = agronomicalFactors{j,5};
+%                         b1 = agronomicalFactorsList{k,4}/5;
+%                         c1 = votingAgronomic(m,agronomicalFactorsList{k,2});
+                        
                     elseif category == 3 %ripening days                        
                         if agronomicalFactorsList{k,4} == 1
                             
