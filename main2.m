@@ -745,7 +745,7 @@ votingTable(6,1:41) = districtVotes;
 
 votesVar = sum(votingTable);
 
-nSelVar = 2; %MODIFIED IN MAIN 2 %compute Top N varieties selected for next phase %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THINK ON THIS
+nSelVar = 10; %MODIFIED IN MAIN 2 %compute Top N varieties selected for next phase %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THINK ON THIS
 
 global selVarIndex;
 selVarIndex = zeros(nSelVar,2);
@@ -758,7 +758,7 @@ end
 
 
  %CLEAR VARIABLES 
-clear Region RotationalPosition SoilType SownPeriod 
+clear Region RotationalPosition SoilType SownPeriod votingTable votesVar
 
 
 %voting agronomic factors
@@ -851,9 +851,9 @@ end
 
 %normalize and sum Votes - 50% each gui
 selVarIndex(:,2) = normc(selVarIndex(:,2));
-a = sum(votingAgronomic,2);
+av = sum(votingAgronomic,2);
 
-selVarIndex(:,2) = ((selVarIndex(:,2) + normc(a))/2)*100;
+selVarIndex(:,2) = ((selVarIndex(:,2) + normc(av))/2)*100;
 
 [sortVar,ixV] = sort(selVarIndex,'descend');
 
@@ -867,15 +867,16 @@ resumeVotes = cell(Nmax,3);%MODIFIED MAIN 2
 ix = selVarIndex(ixV(:,2),1);
 votes = selVarIndex(ixV(:,2),2);
 
-for i=1:Nmax %MODIFIED TO TAKE JUST THE TWO BEST VARIETIES OF EACH EXECUTION
+for i=1:2 %MODIFIED TO TAKE JUST THE TWO BEST VARIETIES OF EACH EXECUTION
      resumeVotes{i,1} = ix(i);%index
      resumeVotes{i,2} = char(Varietiesmarkets(ix(i),1));
      resumeVotes{i,3} = votes(i);     
      %resumeVotes{i,4} = Varietiesmarkets{ix(i),2}; %Modified main2
 end
 
+
 a = resumeVotes;
-%clear;
+clear resumeVotes ix votes votingAgronomic selVarIndex sortVar ixV ix agronomicalFactorsList agronomicalFactors;
 
 
 

@@ -110,6 +110,8 @@ for time=1:loops
                                 
                             end
                             
+                            clear a;
+                            
                             a = main2(market, optSoil, dataS, rotaionalPosition, region, dist, resLodNoPgr, resLodYesPgr, yelRust, septTric, septNod, oraWBlMi, mildew, fusEaBli, eyespot, broRust, ripDays, height);
                             
                             for c=1:2
@@ -137,16 +139,8 @@ for time=1:loops
                                     resultVotes{cont,21} = a{c,3};
                                     cont = cont +1;
                                                              
-                            end
-                            
-                            cont;
-                            
-                           % resultVotes(cont,:) = (market, optSoil, dataS, rotaionalPosition, region, dist, resLodNoPgr, resLodYesPgr, yelRust, septTric, septNod, oraWBlMi, mildew, fusEaBli, eyespot, broRust, ripDays, height, a(1,1), a(1,2), a(1,3)) ;
-                            %resultVotes(cont+1,:) =
-                            %result(cont,:) = (
-                            %result(cont,:) = (market, optSoil, dataS, rotaionalPosition, region, dist, resLodNoPgr, resLodYesPgr, yelRust, septTric, septNod, oraWBlMi, mildew, fusEaBli, eyespot, broRust, ripDays, height);
-                            %cont = cont+2;
-                        %end                        
+                            end                           
+                                                
                     end
                 end
             end
