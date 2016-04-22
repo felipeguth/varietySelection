@@ -71,9 +71,9 @@ end
 global resumeVotes
 
 dataCell= resumeVotes;%{'John',26;'Henri',18};%# store data as a cell
-colNames={'Num','Name', 'Points', 'Market'};%# names for each column of data
+colNames={'Num','Name', 'Points', 'Market'};%# names for each column of data %300 580 390 250
 
-uitable('Data',dataCell,'ColumnName',colNames, 'Position',[300 560 350 200]);
+uitable('Data',dataCell,'FontName','Arial','FontSize',14,'ColumnName',colNames, 'Position',[269 510 450 258]);
 
 
 % UIWAIT makes VarietySelection3 wait for user response (see UIRESUME)
