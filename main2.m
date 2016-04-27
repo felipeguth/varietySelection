@@ -852,14 +852,24 @@ end
 %normalize site-specific
 minv = min(selVarIndex(:,2));
 maxv = max(selVarIndex(:,2));
-SiteSpecV = (selVarIndex(:,2) - minv)/(maxv - minv);   
+
+if maxv - minv > 0
+   SiteSpecV = (selVarIndex(:,2) - minv)/(maxv - minv);   
+else
+    SiteSpecV = 1;
+end
 
 %normalize agronomic factors
 av = sum(votingAgronomic,2);
 
 minv = min(av);
 maxv = max(av);
-agFacV = (av(:) - minv)/(maxv - minv);   
+
+if maxv - minv > 0
+   agFacV = (av(:) - minv)/(maxv - minv);   
+else
+    agFacV = 1;
+end
 
 %sum
 selVarIndex(:,2) = ((SiteSpecV + agFacV)/2)*100;
