@@ -694,7 +694,7 @@ hitTopYield = 3;
 hitToppcYield = 2;
 
 hitMarket = 15;
-missMarket = -10;
+missMarket = -15;
 
 hitSeedPeriod = 3;
 missSeedPeriod = -3;
@@ -847,11 +847,21 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%normalize and sum Votes - 50% each gui
-selVarIndex(:,2) = normc(selVarIndex(:,2));
-a = sum(votingAgronomic,2);
+%normalize site-specific
+minv = min(selVarIndex(:,2));
+maxv = max(selVarIndex(:,2));
+SiteSpecV = (selVarIndex(:,2) - minv)/(maxv - minv);   
 
-selVarIndex(:,2) = ((selVarIndex(:,2) + normc(a))/2)*100;
+%normalize agronomic factors
+av = sum(votingAgronomic,2);
+
+minv = min(av);
+maxv = max(av);
+agFacV = (av(:) - minv)/(maxv - minv);   
+
+%sum
+selVarIndex(:,2) = ((SiteSpecV + agFacV)/2)*100;
+
 
 [sortVar,ixV] = sort(selVarIndex,'descend');
 
