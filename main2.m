@@ -692,8 +692,8 @@ hit = 3; %general hit
 miss =3; %general hit
 
 hitThresholdTrials = 2;
-hitTopYield = 3;
-hitToppcYield = 2;
+hitTopYield = 5; %not used anymore
+hitToppcYield = 5;
 
 hitMarket = 15;
 missMarket = -15;

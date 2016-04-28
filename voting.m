@@ -4,8 +4,8 @@ function [ voteFactor ] = voting( matFactor, posValues, posVarName, hitFactor, m
 global Varietiesmarkets
 
 thresholdTrials = 10; %over this reveice extra vote 
-numberTopYields = 5; %select top n yields to receive extra vote
-numberTopPctYields = 5;
+numberTopYields = 3; %select top n yields to receive extra vote
+numberTopPctYields = 3;
 
 voteFactor = zeros(1,41);
 
@@ -25,8 +25,9 @@ for i=2:size(matFactor,1)
     trials = strcmp(measure, 'Number of trials');
     pctYield = strcmp(measure, 'Yield (% control varieties)');
     
-    if yield == 1 %assign vote for varieties within the seeding period especified        
-        voteFactor(1,varietyIndex) =  voteFactor(1,varietyIndex) + hitFactor;  
+    if yield == 1       
+        %voteFactor(1,varietyIndex) =  voteFactor(1,varietyIndex) + hitFactor;  
+        voteFactor(1,varietyIndex) =  voteFactor(1,varietyIndex) + matFactor{i,posValues} * hitFactor;
         %store yield vector
         yieldVect(yi,1) = varietyIndex;
         yieldVect(yi,2) = matFactor{i,posValues};
@@ -44,13 +45,14 @@ for i=2:size(matFactor,1)
 
 end    
     
-%assign vote for top yields    
-[sortY,ixY] = sort(yieldVect(:,2),'descend'); %sort vector in descending order
-for i=1:numberTopYields
-    varietyIndex = yieldVect(ixY(i));
-    %a = voteFactor(1,varietyIndex);
-    voteFactor(1,varietyIndex) =  voteFactor(1,varietyIndex) + hitTopYield; %vote for being in top yields
-end
+% %assign vote for top yields    - excluded because logic it is done already in
+% %yields and yield is evaluated in upper if clause
+% [sortY,ixY] = sort(yieldVect(:,2),'descend'); %sort vector in descending order
+% for i=1:numberTopYields
+%     varietyIndex = yieldVect(ixY(i));
+%     %a = voteFactor(1,varietyIndex);
+%     voteFactor(1,varietyIndex) =  voteFactor(1,varietyIndex) + hitTopYield; %vote for being in top yields
+% end
 
 
 %assign vote for % top yields
