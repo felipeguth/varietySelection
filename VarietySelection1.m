@@ -22,7 +22,7 @@ function varargout = VarietySelection1(varargin)
 
 % Edit the above text to modify the response to help VarietySelection1
 
-% Last Modified by GUIDE v2.5 23-Mar-2016 16:25:03
+% Last Modified by GUIDE v2.5 05-May-2016 11:31:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -290,3 +290,11 @@ function popupmenu4_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --------------------------------------------------------------------
+function Parameters_Callback(hObject, eventdata, handles)
+% hObject    handle to Parameters (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+VarietySelection4_params()

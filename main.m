@@ -59,52 +59,49 @@ agronomicalFactorsList{12,4} = broRust;
 
 
 
-%parameters
-%market
-% 1
-% 2
-% 3
-% 4
-% 5
-%market = 1;
+% Parameters
+load('/home/phd/Documents/Matlab/varietySelection/RawData/treated/parameters.mat');
 
+%site specific -based on yield results of trials
+hitMarket = param(1);
+missMarket = param(2);
+hitThresholdTrials = param(3);
+hitToppcYield = param(4);
 
-%soilType
-%1 - light
-%2 - Medium
-%3 - Heavy
-%optSoil = 1;
+wSeedPeriod = param(5);
+wSoilType = param(6);
+wRotPosi = param(7);
+wDistrict = param(8);
+wRegion = param(9);
+nSelVar = param(10);
 
+wSiteSpec = param(11);
+wAgrParam = param(12);
 
-%rotationalPosition
-%1 - first cereal
-%2 - second cereal
-%rotaionalPosition = 1;
-
-
-%region
-%N = North
-%W = West
-%E = East
-%region = 'N';
-
-
+% hitThresholdTrials = 2;
+hitTopYield = 5; %not used anymore
+% hitToppcYield = 5;
 % 
-% data sown
-% 1 = early - before september
-% 2 = mid - 15 sept - 6 october
-% 3 = late - after 15 november
-%dataS = 2;
-
-
-%%%agronomic factors parameters
-
-%values parameters in factors %SUBSTITUTE THIS FOR DIAL UI
-low = 0.2;
-medium = 0.45;
-high = 0.9;
-
-
+% hitMarket = 15;
+% missMarket = -15;
+% wSeedPeriod = 3;
+% wRegion = 2;
+% wDistrict = 3;
+% wSoilType = 4;
+% wRotPosi = 3;
+% %%site specific -based on yield results of trials
+% 
+% %weights
+% wSiteSpec = 0.5;
+% wAgrParam = 0.5;
+% 
+% 
+ hit = 3; %general hit -not used anymore
+ miss =3; %general hit - not used anymore
+% 
+% 
+% nSelVar = 10; %compute Top N varieties selected for next phase - agronomical voting
+% 
 
 global Varietiesmarkets
 
@@ -686,20 +683,7 @@ clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData
 
 
 
-hit = 3; %general hit
-miss =3; %general hit
-
-hitThresholdTrials = 2;
-hitTopYield = 5; %not used anymore
-hitToppcYield = 5;
-
-hitMarket = 15;
-missMarket = -15;
-
-hitSeedPeriod = 3;
-missSeedPeriod = -3;
-
-
+%start voting procedure
 votingTable = zeros(6,41);
 
 %compute market votings
@@ -714,23 +698,24 @@ for i=1:size(Varietiesmarkets,1)
     end    
 end
 
-
+%miss penalty is just used in markek, voting of other site specific do not
+%need miss parameters
 %[ voteFactor ] = voting( matFactor, posValues, posVarName, hitFactor, missFactor, hitThresholdTrials, hitTopYield, hitToppcYield);
 
 %seeding period
-[ seedingVotes ] = voting(SownPeriod, 8, 6, hitSeedPeriod, missSeedPeriod, hitThresholdTrials, hitTopYield, hitToppcYield);
+[ seedingVotes ] = voting(SownPeriod, 8, 6, wSeedPeriod, miss, hitThresholdTrials, hitTopYield, hitToppcYield);
 
 %soilType
-[ soilVotes ] = voting(SoilType, 8, 6, hit, miss, hitThresholdTrials, hitTopYield, hitToppcYield);
+[ soilVotes ] = voting(SoilType, 8, 6, wSoilType, miss, hitThresholdTrials, hitTopYield, hitToppcYield);
 
 %RotationalPosition
-[ rotationalPosVotes ] = voting(RotationalPosition, 9, 7, hit, miss, hitThresholdTrials, hitTopYield, hitToppcYield);
+[ rotationalPosVotes ] = voting(RotationalPosition, 9, 7, wRotPosi, miss, hitThresholdTrials, hitTopYield, hitToppcYield);
 
 %Region
-[ regionVotes ] = voting(Region, 10, 8, 2, -5, hitThresholdTrials, hitTopYield, hitToppcYield);
+[ regionVotes ] = voting(Region, 10, 8, wRegion, -5, hitThresholdTrials, hitTopYield, hitToppcYield);
 
 %district
-[ districtVotes ] = voting(District, 8, 6, 3, -5, hitThresholdTrials, hitTopYield, hitToppcYield);
+[ districtVotes ] = voting(District, 8, 6, wDistrict, -5, hitThresholdTrials, hitTopYield, hitToppcYield);
 
 
 %allocate votes on voting table
@@ -743,7 +728,7 @@ votingTable(6,1:41) = districtVotes;
 
 votesVar = sum(votingTable);
 
-nSelVar = 10; %compute Top N varieties selected for next phase %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%THINK ON THIS
+
 
 global selVarIndex;
 selVarIndex = zeros(nSelVar,2);
@@ -759,11 +744,8 @@ end
 clear Region RotationalPosition SoilType SownPeriod 
 
 
-%voting agronomic factors
-lowAg = 0.2;
-medAg = 0.45;
-higAg = 0.9;
-
+%agronomic weights are choosen on the second gui. The values are multiplied
+%by the matching variety's agronomic performance  
 
 nAgFac = size(agronomicalFactorsList,1); 
 nVar = size(selVarIndex,1);
