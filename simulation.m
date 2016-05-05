@@ -50,7 +50,7 @@ for time=1:loops
 %                             end
                         %else
                             %generate ag factors
-                            if time == 1 %maximum 
+                            if time == 10 %maximum 
                                 resLodNoPgr =5;
                                 resLodYesPgr =5;
                                 yelRust =5;
@@ -64,7 +64,7 @@ for time=1:loops
                                 ripDays=5;
                                 height=5;                              
                                                                 
-                            elseif time ==2 %minimum
+                            elseif time ==20 %minimum
                                 resLodNoPgr =1;
                                 resLodYesPgr =1;
                                 yelRust =1;
@@ -78,7 +78,7 @@ for time=1:loops
                                 ripDays=1;
                                 height=1;
                                 
-                            elseif time ==3 %avg 
+                            elseif time ==30 %avg 
                                 resLodNoPgr =3;
                                 resLodYesPgr =3;
                                 yelRust =3;
