@@ -50,49 +50,49 @@ for time=1:loops
 %                             end
                         %else
                             %generate ag factors
-                            if time == 10 %maximum 
-                                resLodNoPgr =5;
-                                resLodYesPgr =5;
-                                yelRust =5;
-                                septTric=5;
-                                septNod=5;
-                                oraWBlMi=5;
-                                mildew=5;
-                                fusEaBli=5;
-                                eyespot=5;
-                                broRust=5;
-                                ripDays=5;
-                                height=5;                              
-                                                                
-                            elseif time ==20 %minimum
-                                resLodNoPgr =1;
-                                resLodYesPgr =1;
-                                yelRust =1;
-                                septTric=1;
-                                septNod=1;
-                                oraWBlMi=1;
-                                mildew=1;
-                                fusEaBli=1;
-                                eyespot=1;
-                                broRust=1;
-                                ripDays=1;
-                                height=1;
-                                
-                            elseif time ==30 %avg 
-                                resLodNoPgr =3;
-                                resLodYesPgr =3;
-                                yelRust =3;
-                                septTric=3;
-                                septNod=3;
-                                oraWBlMi=3;
-                                mildew=3;
-                                fusEaBli=3;
-                                eyespot=3;
-                                broRust=3;
-                                ripDays=3;
-                                height=3;
+%                             if time == 1 %maximum 
+%                                 resLodNoPgr =5;
+%                                 resLodYesPgr =5;
+%                                 yelRust =5;
+%                                 septTric=5;
+%                                 septNod=5;
+%                                 oraWBlMi=5;
+%                                 mildew=5;
+%                                 fusEaBli=5;
+%                                 eyespot=5;
+%                                 broRust=5;
+%                                 ripDays=5;
+%                                 height=5;                              
+%                                                                 
+%                             elseif time ==2 %minimum
+%                                 resLodNoPgr =1;
+%                                 resLodYesPgr =1;
+%                                 yelRust =1;
+%                                 septTric=1;
+%                                 septNod=1;
+%                                 oraWBlMi=1;
+%                                 mildew=1;
+%                                 fusEaBli=1;
+%                                 eyespot=1;
+%                                 broRust=1;
+%                                 ripDays=1;
+%                                 height=1;
+%                                 
+%                             elseif time ==3 %avg 
+%                                 resLodNoPgr =3;
+%                                 resLodYesPgr =3;
+%                                 yelRust =3;
+%                                 septTric=3;
+%                                 septNod=3;
+%                                 oraWBlMi=3;
+%                                 mildew=3;
+%                                 fusEaBli=3;
+%                                 eyespot=3;
+%                                 broRust=3;
+%                                 ripDays=3;
+%                                 height=3;
                                                                
-                            else
+                           % else
                                 %random ag number generation 
                                 r = randi([1 5],1,12);  
                                 resLodNoPgr =r(1);
@@ -108,7 +108,7 @@ for time=1:loops
                                 ripDays=r(11);
                                 height=r(12);
                                 
-                            end
+                           % end
                             
                             clear a;
                             
